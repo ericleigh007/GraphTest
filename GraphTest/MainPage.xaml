@@ -1,0 +1,146 @@
+﻿<Page
+    x:Class="GraphTest.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:GraphTest.Converters"
+    xmlns:local="using:GraphTest"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:providers="using:Microsoft.Toolkit.Graph.Providers"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:wgt="using:Microsoft.Toolkit.Graph.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <!-- <ResourcesSnippet> -->
+    <Page.Resources>
+        <converters:GraphDateTimeTimeZoneConverter x:Key="GraphDateTimeTimeZoneConverter" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </Page.Resources>
+    <!-- </ResourcesSnippet> -->
+
+    <Interactivity:Interaction.Behaviors>
+        <providers:InteractiveProviderBehavior x:Name="MsalProvider" />
+    </Interactivity:Interaction.Behaviors>
+
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate x:Key="RowDetailsTemplate">
+                <StackPanel>
+                    <TextBlock Margin="10,0,10,10" Text="File Details:" />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Text="Created:" Margin="10,0,10,0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CreatedDateTime}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2"  Text="By:" Margin="20,0,20,0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding CreatedBy.User.DisplayName}"/>
+                        <TextBlock Grid.Row="1" Text="Last modifed:" Margin="10,0,10,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LastModifiedDateTime}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="By:" Margin="20,0,20,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LastModifiedBy.User.DisplayName}"/>
+                        <TextBlock Grid.Row="2" Text="Image Size" Margin="10,0,10,0" Visibility="{Binding Image}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Image.Width}" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="x" Margin="10,0,10,0" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Image.Height}" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="3" Text="Date Taken" Margin="10,0,10,0" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Photo.DateTaken}" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    </Grid>
+                </StackPanel>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <wgt:LoginButton x:Name="LoginButton" Grid.Column="0"
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Right" />
+            <TextBlock x:Name="LoggedInTextBlock" Text="Not logged in" Grid.Column="1" VerticalAlignment="Center"/>
+            <Button x:Name="GetDirectoryButton" Content="Get Directory" Tapped="GetDirectoryButton_Tapped" 
+                    IsEnabled="False" Grid.Column="2"/>
+            <Button x:Name="NextPageButton" Content="Next Page" Tapped="NextPageButton_Tapped" 
+                    IsEnabled="False" Grid.Column="3"/>
+            <Button x:Name="SearchButton" Tapped="SearchButton_Tapped" Grid.Column="4">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Find" HorizontalAlignment="Left"/>
+                        <TextBox x:Name="SearchTextBox" IsEnabled="False" Margin="10,0,0,0" PlaceholderText="Search OneDrive" HorizontalAlignment="Stretch"
+                                 KeyDown="SearchTextBox_KeyDown"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button x:Name="BackToDirectoryButton" Content="Back To Files" Tapped="BackToDirectoryButton_Tapped"
+                    Grid.Column="5"/>
+        </Grid>
+        
+        <controls:DataGrid x:Name="FileList" Grid.Row="1"
+        Margin="12"
+        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        HorizontalScrollBarVisibility="Visible"
+        VerticalScrollBarVisibility="Visible"
+        AlternatingRowBackground="Transparent"
+        AlternatingRowForeground="IndianRed"
+        AreRowDetailsFrozen="False"
+        AreRowGroupHeadersFrozen="True"
+        AutoGenerateColumns="False"
+        CanUserSortColumns="True"
+        CanUserReorderColumns="True"
+        CanUserResizeColumns="True"
+        ColumnHeaderHeight="32"
+        MaxColumnWidth="400"
+        FrozenColumnCount="0"
+        GridLinesVisibility="Vertical"
+        HeadersVisibility="Column"
+        IsReadOnly="False"
+        RowDetailsVisibilityMode="VisibleWhenSelected"
+        RowDetailsTemplate="{StaticResource RowDetailsTemplate}"
+        SelectionMode="Extended"
+        RowGroupHeaderPropertyNameAlternative="Range">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn
+                        Header="Name"
+                        Width="SizeToCells"
+                        Binding="{Binding Name}"
+                        FontSize="14" />
+                <controls:DataGridTextColumn
+                        Header="Parent"
+                        Width="SizeToCells"
+                        Binding="{Binding ParentReference.Path}"
+                        FontSize="14" />
+                <controls:DataGridTextColumn
+                        Header="Size"
+                        Width="SizeToCells"
+                        Binding="{Binding Size}"
+                        FontSize="14" />
+                <controls:DataGridTextColumn
+                        Header="Time"
+                        Width="SizeToCells"
+                        Binding="{Binding LastModifiedDateTime, Converter={StaticResource GraphDateTimeTimeZoneConverter}}"
+                        FontSize="14" />
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </Grid>
+</Page>
