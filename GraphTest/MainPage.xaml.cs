@@ -194,5 +194,15 @@ namespace GraphTest
                 NextPageButton.IsEnabled = (searchItems.NextPageRequest != null);
             }
         }
+
+        private void FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            return;
+        }
+
+        private void FileList_CurrentCellChanged(object sender, EventArgs e)
+        {
+            return;
+        }
     }
 }

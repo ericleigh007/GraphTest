@@ -100,7 +100,7 @@
             <Button x:Name="BackToDirectoryButton" Content="Back To Files" Tapped="BackToDirectoryButton_Tapped"
                     Grid.Column="5"/>
         </Grid>
-        
+
         <controls:DataGrid x:Name="FileList" Grid.Row="1"
         Margin="12"
         VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
@@ -119,11 +119,13 @@
         FrozenColumnCount="0"
         GridLinesVisibility="Vertical"
         HeadersVisibility="Column"
-        IsReadOnly="False"
+        IsReadOnly="True"
         RowDetailsVisibilityMode="VisibleWhenSelected"
         RowDetailsTemplate="{StaticResource RowDetailsTemplate}"
         SelectionMode="Extended"
-        RowGroupHeaderPropertyNameAlternative="Range">
+        RowGroupHeaderPropertyNameAlternative="Range"
+        SelectionChanged="FileList_SelectionChanged"
+        CurrentCellChanged="FileList_CurrentCellChanged">
             <!--                         
             -->
             <controls:DataGrid.Columns>
