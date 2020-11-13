@@ -119,6 +119,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\ClassToItemIconConverter.cs" />
     <Compile Include="Converters\GraphDateTimeTimeZoneConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="MainPage.xaml.cs">

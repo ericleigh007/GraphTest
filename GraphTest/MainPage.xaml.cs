@@ -52,10 +52,6 @@ namespace GraphTest
 
         private bool searchInProgress = false;
 
-        private ReleaseGraph.PageIterator<DriveItem> pageIterator;
-
-        private int itemsIterated = 0;
-
         private readonly int ITEM_COUNT = 50;
 
         public MainPage()
@@ -113,11 +109,7 @@ namespace GraphTest
 
         private async void GetDirectoryButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var currentRange = 1;
-
             var sortKeyName = currentSortKey.ToString();
-
-            itemsIterated = 0;
 
             try
             {
@@ -153,13 +145,6 @@ namespace GraphTest
 
         private async void NextPageButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            // run this sync so that the update of the ItemsSource will happen in sync.
-            // Otherwise, it happens before the data is there.
-            itemsIterated = 0;
-
-            //            pageIterator.ResumeAsync().Wait();
-
-            int checkCount = 0;
             if (searchInProgress)
             {
                 searchItems = await searchItems.NextPageRequest.GetAsync();

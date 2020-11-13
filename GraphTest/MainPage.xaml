@@ -17,6 +17,7 @@
     <Page.Resources>
         <converters:GraphDateTimeTimeZoneConverter x:Key="GraphDateTimeTimeZoneConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:ClassToItemIconConverter x:Key="ClassToItemIconConverter" />
     </Page.Resources>
     <!-- </ResourcesSnippet> -->
 
@@ -31,11 +32,13 @@
                     <TextBlock Margin="10,0,10,10" Text="File Details:" />
                     <Grid>
                         <Grid.RowDefinitions>
+                            <!-- These rows always present -->
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <!-- optional rows based upon their content = note all columns have to be set to vis.collapsed to hide -->
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -45,18 +48,20 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Row="0" Text="Created:" Margin="10,0,10,0"/>
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CreatedDateTime}"/>
-                        <TextBlock Grid.Row="0" Grid.Column="2"  Text="By:" Margin="20,0,20,0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="By:" Margin="20,0,20,0"/>
                         <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding CreatedBy.User.DisplayName}"/>
                         <TextBlock Grid.Row="1" Text="Last modifed:" Margin="10,0,10,0"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LastModifiedDateTime}"/>
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="By:" Margin="20,0,20,0"/>
                         <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LastModifiedBy.User.DisplayName}"/>
-                        <TextBlock Grid.Row="2" Text="Image Size" Margin="10,0,10,0" Visibility="{Binding Image}"/>
+                        <TextBlock Grid.Row="2" Text="Image Size" Margin="10,0,10,0" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
                         <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Image.Width}" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
                         <TextBlock Grid.Row="2" Grid.Column="2" Text="x" Margin="10,0,10,0" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
                         <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Image.Height}" Visibility="{Binding Image, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Grid.Row="3" Text="Date Taken" Margin="10,0,10,0" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Photo.DateTaken}" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="3" Text="Date Taken by a" Margin="10,0,10,0" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Photo.CameraMake}" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Photo.CameraModel}" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Photo.TakenDateTime}" Margin="20,0,20,0" Visibility="{Binding Photo, Converter={StaticResource NullToVisibilityConverter}}"/>
                     </Grid>
                 </StackPanel>
             </DataTemplate>
@@ -119,7 +124,15 @@
         RowDetailsTemplate="{StaticResource RowDetailsTemplate}"
         SelectionMode="Extended"
         RowGroupHeaderPropertyNameAlternative="Range">
+            <!--                         
+            -->
             <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn
+                        Header="Type"
+                        Width="SizeToCells"
+                        Binding="{Binding Converter={StaticResource ClassToItemIconConverter}}"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"/>
                 <controls:DataGridTextColumn
                         Header="Name"
                         Width="SizeToCells"
