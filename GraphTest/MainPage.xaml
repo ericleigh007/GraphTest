@@ -73,22 +73,24 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
             <wgt:LoginButton x:Name="LoginButton" Grid.Column="0"
                 VerticalAlignment="Top" 
                 HorizontalAlignment="Right" />
             <TextBlock x:Name="LoggedInTextBlock" Text="Not logged in" Grid.Column="1" VerticalAlignment="Center"/>
+            <SymbolIcon x:Name="DirectoryUpButton" Symbol="Up" Grid.Column="2" Tapped="DirectoryUpIcon_Tapped"/>
             <Button x:Name="GetDirectoryButton" Content="Get Directory" Tapped="GetDirectoryButton_Tapped" 
-                    IsEnabled="False" Grid.Column="2"/>
-            <Button x:Name="NextPageButton" Content="Next Page" Tapped="NextPageButton_Tapped" 
                     IsEnabled="False" Grid.Column="3"/>
-            <Button x:Name="SearchButton" Tapped="SearchButton_Tapped" Grid.Column="4">
+            <Button x:Name="NextPageButton" Content="Next Page" Tapped="NextPageButton_Tapped" 
+                    IsEnabled="False" Grid.Column="4"/>
+            <Button x:Name="SearchButton" Tapped="SearchButton_Tapped" Grid.Column="5">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="Find" HorizontalAlignment="Left"/>
@@ -98,7 +100,7 @@
                 </Button.Content>
             </Button>
             <Button x:Name="BackToDirectoryButton" Content="Back To Files" Tapped="BackToDirectoryButton_Tapped"
-                    Grid.Column="5"/>
+                    Grid.Column="6"/>
         </Grid>
 
         <controls:DataGrid x:Name="FileList" Grid.Row="1"
@@ -139,11 +141,13 @@
                         Header="Name"
                         Width="SizeToCells"
                         Binding="{Binding Name}"
+                        Tag="Name"
                         FontSize="14" />
                 <controls:DataGridTextColumn
                         Header="Parent"
                         Width="SizeToCells"
                         Binding="{Binding ParentReference.Path}"
+                        Tag="Path"
                         FontSize="14" />
                 <controls:DataGridTextColumn
                         Header="Size"

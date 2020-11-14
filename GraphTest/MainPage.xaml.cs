@@ -26,6 +26,7 @@ using System.Diagnostics;
 using Microsoft.Graph;
 using ReleaseGraph = ReleaseLib.Microsoft.Graph;
 using Windows.System;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -50,9 +51,32 @@ namespace GraphTest
 
         private IDriveItemSearchCollectionPage searchItems;
 
+        private String _currentDrivePath = String.Empty;
+        public String CurrentDrivePath
+        {
+            get 
+            {
+                return _currentDrivePath;
+            }
+
+            set
+            {
+                if (value.StartsWith(DRIVE_ROOT_PATH))
+                {
+                    _currentDrivePath = value.Substring(DRIVE_ROOT_PATH.Length);
+                }
+                else
+                {
+                    _currentDrivePath = value;
+                }
+            }
+        }
+
         private bool searchInProgress = false;
 
         private readonly int ITEM_COUNT = 50;
+
+        private readonly String DRIVE_ROOT_PATH = @"/drive/root:";
 
         public MainPage()
         {
@@ -109,16 +133,33 @@ namespace GraphTest
 
         private async void GetDirectoryButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            // if we are responding to the "Get Directory" button, just set the current path.  Otherwise,
+            // the caller did that.  (we don't use sender within this method)
+            if (sender != null)
+            {
+                CurrentDrivePath = String.Empty;
+            }
+
             var sortKeyName = currentSortKey.ToString();
 
             try
             {
-                // Get the events
-                driveItems = await graphClient.Me.Drive.Root.Children.Request()
-                    //                    .Select("parent,name,size,lastModifiedDateTime,webUrl")
-                    .OrderBy($"{sortKeyName} ASC").Top(ITEM_COUNT)
-                    .GetAsync();
-
+                if (CurrentDrivePath == String.Empty)
+                {
+                    // get the items at the root of the drive
+                    driveItems = await graphClient.Me.Drive.Root.Children.Request()
+                        //                    .Select("parent,name,size,lastModifiedDateTime,webUrl")
+                        .OrderBy($"{sortKeyName} ASC").Top(ITEM_COUNT)
+                        .GetAsync();
+                }
+                else
+                {
+                    // Get the items in the path specified
+                    driveItems = await graphClient.Me.Drive.Root.ItemWithPath(CurrentDrivePath).Children.Request()
+                        //                    .Select("parent,name,size,lastModifiedDateTime,webUrl")
+                        .OrderBy($"{sortKeyName} ASC").Top(ITEM_COUNT)
+                        .GetAsync();
+                }
 
                 FileList.ItemsSource = driveItems.CurrentPage.ToList();
 
@@ -202,6 +243,57 @@ namespace GraphTest
 
         private void FileList_CurrentCellChanged(object sender, EventArgs e)
         {
+            string newCurrentPath = String.Empty;
+
+            var dg = sender as DataGrid;
+
+            var colTag = dg.CurrentColumn?.Tag?.ToString();
+            if (colTag == "Path" || colTag == "Name")
+            {
+                if (colTag == "Path")
+                {
+                    newCurrentPath = (dg.SelectedItem as DriveItem).ParentReference.Path;
+                }
+
+                else if ((colTag == "Name") && (dg.SelectedItem as DriveItem)?.Folder != null)
+                {
+                    var di = (dg.SelectedItem as DriveItem);
+
+                    newCurrentPath = di.ParentReference.Path + @"/" + di.Name + @"/";
+                }
+
+                // done because the setter strips this off it is present
+                if (newCurrentPath == (DRIVE_ROOT_PATH + CurrentDrivePath))
+                {
+                    return;  // no action necessary, we're already there.
+                }
+
+                CurrentDrivePath = newCurrentPath;
+
+                GetDirectoryButton_Tapped(null, null);
+
+                return;
+            }
+
+            return;
+        }
+
+        private void DirectoryUpIcon_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (CurrentDrivePath == String.Empty) return;
+
+
+            var pathElements = CurrentDrivePath.Split('/');
+            var newCurrentPath = String.Join('/', pathElements.SkipLast(1).ToArray());
+            if ( !newCurrentPath.EndsWith('/'))
+            {
+                newCurrentPath += '/';
+            }
+
+            CurrentDrivePath = newCurrentPath;
+
+            GetDirectoryButton_Tapped(null, null);
+
             return;
         }
     }
